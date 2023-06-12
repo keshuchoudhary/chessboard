@@ -1,0 +1,15 @@
+.grid{
+    margin: auto;
+    width: 800px;
+    height: 800px;
+    display: grid;
+    grid-template-rows: repeat(8, 1fr);
+    grid-template-columns: repeat(8, 1fr);
+    border: 2px solid black;
+    
+}
+
+.cell img{
+    height: 90px;
+    width: 90px;
+}
