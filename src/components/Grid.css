@@ -13,3 +13,53 @@
     height: 90px;
     width: 90px;
 }
+/* 
+.cell{
+    position: relative;
+}
+
+.green-dot {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background-color: green;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+} */
+
+.highlighted {
+    position: relative;
+    cursor: pointer;
+}
+  
+.highlighted::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 22px;
+    height: 22px;
+    background-color: green;
+    border-radius: 50%;
+}
+  
+.undo-btn{
+    width: 100px;
+    height: 50px;
+    font-size: large;
+    background-color: #855E42;
+    color: white;
+    cursor: pointer;
+    transition: background-color 2s ease;
+    border: 2px solid black;
+}
+
+.undo-btn:hover{
+    background-color: #D3D3D3;
+    color: black;
+    height: 55px;
+    width: 110px;
+}

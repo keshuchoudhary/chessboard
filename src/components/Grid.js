@@ -97,12 +97,12 @@ const Grid = () => {
     const [whichPieceTurn, setWhichPieceTurn] = useState("white")
 
 
-    const [isPieceClicked, setIsPieceClicked] = useState({
+    const [recentPieceClicked, setRecentPieceClicked] = useState({
         value: false,
         type: '',
         color: '',
-        r: -1,
-        c: -1,
+        row: -1,
+        col: -1,
         validMoves: [],
     })
 
@@ -128,6 +128,8 @@ const Grid = () => {
         wk74: false,
     })
 
+    const [chessboardHistory, setChessboardHistory] = useState([]);
+
 
 
     // const try64Moves = (type, color, row, col) =>{
@@ -141,6 +143,7 @@ const Grid = () => {
     const getValidMovesOfPawn = (row, col, color, chessboard) => {
         const validMoves=[];
 
+        console.log("----chala-----", row, col)
         
         // --------- (row+1) or (row-2) expression should lie between 0 and 7
         // --------- when pawn reaches last row, option of konsa piece zinda krwana hai
@@ -151,7 +154,7 @@ const Grid = () => {
 
             if(chessboard[row+1][col]==null){
                 validMoves.push({row: row+1, col: col})
-                if(chessboard[row+2][col]==null && row==1){
+                if((row+2<7) && chessboard[row+2][col]==null && row==1){
                     validMoves.push({row: row+2, col: col})
                 }
             }
@@ -165,7 +168,7 @@ const Grid = () => {
         else if(color=="white"){
             if(chessboard[row-1][col]==null){
                 validMoves.push({row: row-1, col: col})
-                if(chessboard[row-2][col]==null && row==6){
+                if((row-2>0) && chessboard[row-2][col]==null && row==6){
                     validMoves.push({row: row-2, col: col})
                 }
             }
@@ -383,35 +386,70 @@ const Grid = () => {
 
 
     const getValidMoves = (type, chessboard, row, col, color) => {
-        // console.log(isPieceClicked.type);
+        // console.log(recentPieceClicked.type);
 
         // const validMoves=[]
+        let moves=[];
         let validMoves=[];
 
         if(type=='pawn'){
-            validMoves =  getValidMovesOfPawn(row, col, color, chessboard);
-            setIsPieceClicked({...isPieceClicked, validMoves: validMoves})
+            moves =  getValidMovesOfPawn(row, col, color, chessboard);
+            // setRecentPieceClicked({...recentPieceClicked, validMoves: validMoves})
         }
         else if(type=='rook'){
-            validMoves =  getValidMovesOfRook(row, col, color, chessboard);
-            setIsPieceClicked({...isPieceClicked, validMoves: validMoves})
+            moves =  getValidMovesOfRook(row, col, color, chessboard);
+            // setRecentPieceClicked({...recentPieceClicked, validMoves: validMoves})
         }
         else if(type=='knight'){
-            validMoves =  getValidMovesOfKnight(row, col, color, chessboard);
-            setIsPieceClicked({...isPieceClicked, validMoves: validMoves})
+            moves =  getValidMovesOfKnight(row, col, color, chessboard);
+            // setRecentPieceClicked({...recentPieceClicked, validMoves: validMoves})
         }
         else if(type=='bishop'){
-            validMoves =  getValidMovesOfBishop(row, col, color, chessboard);
-            setIsPieceClicked({...isPieceClicked, validMoves: validMoves})
+            moves =  getValidMovesOfBishop(row, col, color, chessboard);
+            // setRecentPieceClicked({...recentPieceClicked, validMoves: validMoves})
         }
         else if(type=='queen'){
-            validMoves =  getValidMovesOfQueen(row, col, color, chessboard);
-            setIsPieceClicked({...isPieceClicked, validMoves: validMoves})
+            moves =  getValidMovesOfQueen(row, col, color, chessboard);
+            // setRecentPieceClicked({...recentPieceClicked, validMoves: validMoves})
         }
         else if(type=='king'){
-            validMoves =  getValidMovesOfKing(row, col, color, chessboard);
-            setIsPieceClicked({...isPieceClicked, validMoves: validMoves})
+            moves =  getValidMovesOfKing(row, col, color, chessboard);
+            // setRecentPieceClicked({...recentPieceClicked, validMoves: validMoves})
         }
+
+        // const allPossibleMoves = recentPieceClicked.validMoves;
+        
+        for(let i=0; i<moves.length; i++){
+
+            let copy=JSON.parse(JSON.stringify(chessboard));
+            let tempMove = moves[i];
+
+            copy[tempMove.row][tempMove.col]=copy[row][col];
+            copy[row][col]=null;
+            // ------- Check this out, on clicking on king below line says Cannot destructure property 'row' of 'findKing(...)' as it is undefined. at isKingInCheckHelper (bundle.js:1402:7) at willKingGetCheck (bundle.js:1507:9) at getValidMoves 
+            // Shayad is wajah se kyuki, willKingGetCheck() m recentPieceClicked ki value purane piece ki rhegi isliye
+            // if(isKingInCheckHelper(color, copy)==false && willKingGetCheck(tempMove.row, tempMove.col, copy)==false){
+            if(isKingInCheckHelper(color, copy)==false){
+
+                validMoves.push(tempMove);
+            }
+
+        }
+
+        if(chessboard[row][col].type=='king'){
+            if(isShortCastlingPossible()){
+                validMoves.push({row: row, col: col+2})
+            }
+            if(isLongCastlingPossible()){
+                validMoves.push({row: row, col: col-2})
+            }
+        }
+
+
+
+        // console.log("----------", validMoves)
+
+
         return validMoves;
     }
 
@@ -462,6 +500,7 @@ const Grid = () => {
     }
 
     const findKing = (color, chessboard) => {
+        console.log("~~~~~~~~~~~~~~~~~~~~~",chessboard)
         for(let i=0; i<8; i++){
             for(let j=0; j<8; j++){
                 if(chessboard[i][j]!=null && chessboard[i][j].color==color && chessboard[i][j].type=='king'){
@@ -585,13 +624,14 @@ const Grid = () => {
 
     }
 
+    // Only use when piece is already clicked and now next cell is gonna clicked
     const willKingGetCheck = (row, col, chessboard) => {
 
         
         
         let copy=JSON.parse(JSON.stringify(chessboard));
-        copy[row][col]=copy[isPieceClicked.r][isPieceClicked.c];
-        copy[isPieceClicked.r][isPieceClicked.c]=null;
+        copy[row][col]=copy[recentPieceClicked.row][recentPieceClicked.col];
+        copy[recentPieceClicked.row][recentPieceClicked.col]=null;
 
 
         // console.log(row, col, copy)
@@ -608,24 +648,24 @@ const Grid = () => {
 
     const updateCastlingInfo = (row, col) => {
         if(whichPieceTurn=='white' && castlingInfo.wk74==false){
-            if(isPieceClicked.r==7 && isPieceClicked.c==0 && isPieceClicked.type=='rook'){
+            if(recentPieceClicked.row==7 && recentPieceClicked.col==0 && recentPieceClicked.type=='rook'){
                 setCastlingInfo({...castlingInfo, wr70: true})
             }
-            else if(isPieceClicked.r==7 && isPieceClicked.c==7 && isPieceClicked.type=='rook'){
+            else if(recentPieceClicked.row==7 && recentPieceClicked.col==7 && recentPieceClicked.type=='rook'){
                 setCastlingInfo({...castlingInfo, wr77: true})
             } 
-            else if(isPieceClicked.r==7 && isPieceClicked.c==4 && isPieceClicked.type=='king'){
+            else if(recentPieceClicked.row==7 && recentPieceClicked.col==4 && recentPieceClicked.type=='king'){
                 setCastlingInfo({...castlingInfo, wk74: true})
             }
         }
         else if(whichPieceTurn=='black' && castlingInfo.bk04==false){
-            if(isPieceClicked.r=0 && isPieceClicked.c==0 && isPieceClicked.type=='rook'){
+            if(recentPieceClicked.row=0 && recentPieceClicked.col==0 && recentPieceClicked.type=='rook'){
                 setCastlingInfo({...castlingInfo, br00: true})
             }
-            else if(isPieceClicked.r==0 && isPieceClicked.c==7 && isPieceClicked.type=='rook'){
+            else if(recentPieceClicked.row==0 && recentPieceClicked.col==7 && recentPieceClicked.type=='rook'){
                 setCastlingInfo({...castlingInfo, br07: true})
             } 
-            else if(isPieceClicked.r==0 && isPieceClicked.c==4 && isPieceClicked.type=='king'){
+            else if(recentPieceClicked.row==0 && recentPieceClicked.col==4 && recentPieceClicked.type=='king'){
                 setCastlingInfo({...castlingInfo, bk04: true})
             }
         }
@@ -755,6 +795,20 @@ const Grid = () => {
         }
     }
 
+    const previousMove = () => {
+        if(chessboardHistory.length==0){
+            return;
+        }
+
+        let prevChessboardState = chessboardHistory[chessboardHistory.length-1]
+        setChessboardHistory(temp => temp.slice(0, temp.length-1))
+
+        setChessboard(prevChessboardState)
+        setWhichPieceTurn(whichPieceTurn=="white"? "black":"white")
+        setRecentPieceClicked({...recentPieceClicked, value: false, type: '', color: '', row: -1, col: -1, validMoves: [] });
+        
+    }
+
     const handlePieceClick = (row, col) => {
 
         // if(isCurrentPlayerKingInCheck()){
@@ -773,80 +827,84 @@ const Grid = () => {
         
 
 
-        // console.log(isPieceClicked)
-        if(chessboard[row][col]!=null && isPieceClicked.value==false && chessboard[row][col].color!=whichPieceTurn){
+        // console.log(recentPieceClicked)
+        if(chessboard[row][col]!=null && recentPieceClicked.value==false && chessboard[row][col].color!=whichPieceTurn){
             // console.log(`Bhai ${whichPieceTurn} abhi tumhari turn hai`)
             return;
         }
         // If chess piece is clicked without any recent pieceClick OR chess piece is clicked and recent piececlick color was also same
-        if((chessboard[row][col]!=null && isPieceClicked.value==false) || (chessboard[row][col]!=null && isPieceClicked.color==chessboard[row][col].color)){
-            setIsPieceClicked({...isPieceClicked, value: true, type: chessboard[row][col].type, color: chessboard[row][col].color, r: row, c: col})
+        if((chessboard[row][col]!=null && recentPieceClicked.value==false) || (chessboard[row][col]!=null && recentPieceClicked.color==chessboard[row][col].color)){
+            setRecentPieceClicked({...recentPieceClicked, value: true, type: chessboard[row][col].type, color: chessboard[row][col].color, row: row, col: col})
             setShowPromotionModal(false)
             setShouldGetValidMovesExecuted(true)
 
 
             
+            
         }
-        else if((isPieceClicked.value==true && chessboard[row][col]==null) || (isPieceClicked.value==true && isPieceClicked.color!=chessboard[row][col].color)){
+        else if((recentPieceClicked.value==true && chessboard[row][col]==null) || (recentPieceClicked.value==true && recentPieceClicked.color!=chessboard[row][col].color)){
             // console.log("This was a kill move")
 
-            console.log("short--", isShortCastlingPossible());
+            // console.log("short--", isShortCastlingPossible());
             // console.log("long--", isLongCastlingPossible());
             // console.log(castlingInfo);
             
-            const allPossibleMoves = isPieceClicked.validMoves;
-            if(isPieceClicked.type=='king'){
-                if(isShortCastlingPossible()){
-                    console.log("short chaliiiiii")
-                    // isPieceClicked.validMoves.push({row: row, col: col+2})
+            // const allPossibleMoves = recentPieceClicked.validMoves;
+            // if(recentPieceClicked.type=='king'){
+            //     if(isShortCastlingPossible()){
+            //         // console.log("short chaliiiiii")
+            //         // recentPieceClicked.validMoves.push({row: row, col: col+2})
 
-                    // setIsPieceClicked(prevState => ({
-                    //     ...prevState,
-                    //     validMoves: [...prevState.validMoves, {row: row, col: col+2}]
-                    // }));
-                    if(col-2==4){
-                        allPossibleMoves.push({row: row, col: col})
-                    }
-                }
-                if(isLongCastlingPossible()){
-                    // setIsPieceClicked(prevState => ({
-                    //     ...prevState,
-                    //     validMoves: [...prevState.validMoves, {row: row, col: col-2}]
-                    // }));
+            //         // setRecentPieceClicked(prevState => ({
+            //         //     ...prevState,
+            //         //     validMoves: [...prevState.validMoves, {row: row, col: col+2}]
+            //         // }));
+            //         if(col-2==4){
+            //             allPossibleMoves.push({row: row, col: col})
+            //         }
+            //     }
+            //     if(isLongCastlingPossible()){
+            //         // setRecentPieceClicked(prevState => ({
+            //         //     ...prevState,
+            //         //     validMoves: [...prevState.validMoves, {row: row, col: col-2}]
+            //         // }));
 
-                    if(col+2==4){
-                        allPossibleMoves.push({row: row, col: col})
-                    }
+            //         if(col+2==4){
+            //             allPossibleMoves.push({row: row, col: col})
+            //         }
 
                     
-                }
-            }
+            //     }
+            // }
 
-            console.log(allPossibleMoves)
+            // console.log(allPossibleMoves)
 
-            // if(isPieceClicked.validMoves.includes({row: row,col: col})){
-            if (allPossibleMoves.some(move => Object.is(move.row, row) && Object.is(move.col, col))){
+            // if(recentPieceClicked.validMoves.includes({row: row,col: col})){
+            if (recentPieceClicked.validMoves.some(move => Object.is(move.row, row) && Object.is(move.col, col))){
 
-                if(isKingInCheckHelper(whichPieceTurn, chessboard)){
-                    if(willKingGetCheck(row, col, chessboard)==true){
-                        return;
-                    }
-                }
+                // No need of below code, as getValidMoves() will take care of only those moves in which the king doesn't get check!
+                // if(isKingInCheckHelper(whichPieceTurn, chessboard)){
+                //     if(willKingGetCheck(row, col, chessboard)==true){
+                //         return;
+                //     }
+                // }
 
-                if(willKingGetCheck(row, col, chessboard)==true){
-                    // console.log("chalra kya")
-                    return;
-                }
+                // if(willKingGetCheck(row, col, chessboard)==true){
+                //     // console.log("chalra kya")
+                //     return;
+                // }
 
                 
+                setChessboardHistory(prevMoves => [...prevMoves, chessboard]);
 
                 
                 // let copy=[...chessboard];
                 let copy=JSON.parse(JSON.stringify(chessboard));
-                copy[row][col] = copy[isPieceClicked.r][isPieceClicked.c]
-                copy[isPieceClicked.r][isPieceClicked.c]=null
+                copy[row][col] = copy[recentPieceClicked.row][recentPieceClicked.col]
+                copy[recentPieceClicked.row][recentPieceClicked.col]=null
 
-                if(isPieceClicked.type=='king'){
+                // For CASTLING move, piece placing!!
+                if(recentPieceClicked.type=='king'){
                     if(isShortCastlingPossible() && col==6 && (row==0 || row==7)){
                         copy[row][col-1]=copy[row][col+1];
                         copy[row][col+1]=null;
@@ -859,12 +917,12 @@ const Grid = () => {
 
                 
 
-                if(isPieceClicked.type=='rook' || isPieceClicked.type=='king'){
+                if(recentPieceClicked.type=='rook' || recentPieceClicked.type=='king'){
                     updateCastlingInfo(row, col);
                 }
     
 
-                if(isPieceClicked.type=='pawn' && (row==7 || row==0)){
+                if(recentPieceClicked.type=='pawn' && (row==7 || row==0)){
                     setCurrentCellClicked({row: row, col: col})
                     setShowPromotionModal(true);
                     
@@ -883,29 +941,30 @@ const Grid = () => {
                 
 
 
-                if(isPieceClicked.color=="white"){
+                if(recentPieceClicked.color=="white"){
                     setWhichPieceTurn("black")
                 }
-                else if(isPieceClicked.color=="black"){
+                else if(recentPieceClicked.color=="black"){
                     setWhichPieceTurn("white")
                 }
 
-                // setIsPieceClicked({...isPieceClicked, value: false, type: '', color: '', r: -1, c: -1, validMoves: [] });
+                // setRecentPieceClicked({...recentPieceClicked, value: false, type: '', color: '', row: -1, col: -1, validMoves: [] });
             }
-            setIsPieceClicked({...isPieceClicked, value: false, type: '', color: '', r: -1, c: -1, validMoves: [] });
+            setRecentPieceClicked({...recentPieceClicked, value: false, type: '', color: '', row: -1, col: -1, validMoves: [] });
 
 
         }
         
-        // console.log(isPieceClicked.value)
+        // console.log(recentPieceClicked.value)
         
     }
 
 
     useEffect(() => {
-        console.log(isPieceClicked);
+        console.log(recentPieceClicked);
         if(shouldGetValidMovesExecuted){
-            getValidMoves(isPieceClicked.type, chessboard, isPieceClicked.r, isPieceClicked.c, isPieceClicked.color)
+            const validMoves = getValidMoves(recentPieceClicked.type, chessboard, recentPieceClicked.row, recentPieceClicked.col, recentPieceClicked.color)
+            setRecentPieceClicked({...recentPieceClicked, validMoves: [...validMoves]})
             setShouldGetValidMovesExecuted(false)
         }
         // if(isKingInCheckHelper(whichPieceTurn, chessboard)){
@@ -922,22 +981,25 @@ const Grid = () => {
             updatedCopy[currentCellClicked.row][currentCellClicked.col].img = pieceImages[whichPieceTurn][selectedPromotedPiece];
             updatedCopy[currentCellClicked.row][currentCellClicked.col].color = whichPieceTurn;
 
-            updatedCopy[isPieceClicked.r][isPieceClicked.c]=null;
-            if(isPieceClicked.color=="white"){
-                setWhichPieceTurn("black")
-            }
-            else if(isPieceClicked.color=="black"){
-                setWhichPieceTurn("white")
-            }
-
-            setIsPieceClicked({...isPieceClicked, value: false, type: '', color: '', r: -1, c: -1, validMoves: [] });
+            updatedCopy[recentPieceClicked.row][recentPieceClicked.col]=null;
+            
+            setRecentPieceClicked({...recentPieceClicked, value: false, type: '', color: '', row: -1, col: -1, validMoves: [] });
 
             setChessboard(updatedCopy);
             setShowPromotionModal(false);
             setSelectedPromotedPiece(null);
+
+
+            if(recentPieceClicked.color=="white"){
+                setWhichPieceTurn("black")
+            }
+            else if(recentPieceClicked.color=="black"){
+                setWhichPieceTurn("white")
+            }
+
         }
 
-      }, [isPieceClicked, shouldGetValidMovesExecuted, selectedPromotedPiece]);
+      }, [recentPieceClicked, shouldGetValidMovesExecuted, selectedPromotedPiece]);
 
     const renderCell = () => {
 
@@ -948,7 +1010,9 @@ const Grid = () => {
             for(let col=0; col<8; col++){
                 const cellColor = ((row+col)%2===0) ? '#855E42' : '#D3D3D3'
                 // const cellColor = ((row+col)%2===0) ? '#96bc4b' : '#D3D3D3'
-                
+                const isHighlighted = recentPieceClicked.validMoves.some(
+                    (highlightedCell) => highlightedCell.row === row && highlightedCell.col === col
+                );
 
 
                 let pieceImage = null;
@@ -962,7 +1026,7 @@ const Grid = () => {
                 const cell = (
                     <div
                         key={`${row}-${col}`}
-                        className="cell"
+                        className={`cell ${isHighlighted ? "highlighted" : ""}`}
                         style={{backgroundColor: cellColor }}
                         onClick={ () => handlePieceClick(row, col)}
                     >
@@ -1003,17 +1067,27 @@ const Grid = () => {
         <div className="grid">
             {renderCell()}
         </div>
+
+
+        
         {showPromotionModal && (
             <div className="modal">
-                <h3>Select a piece for pawn promotion:</h3>
+                <h2>Select a piece for pawn promotion:</h2>
                 <PromotedPiece
-                    // color={whichPieceTurn === 'white' ? 'black' : 'white'}
                     color={whichPieceTurn}
+                    cellColor={(currentCellClicked.row+currentCellClicked.col)%2===0 ? '#855E42' : '#D3D3D3'}
                     onPieceSelect={handlePromotionSelection}
-                    //   onPieceSelect={handlePromotionSelection}
                 />
             </div>
         )}
+        <br/>
+        <div><button className="undo-btn" onClick={()=>previousMove()}>Back</button></div>
+        
+        {whichPieceTurn=="white" && checkMate(whichPieceTurn, chessboard)==false && <h2>It's white turn!</h2>}
+        {whichPieceTurn=="black" && checkMate(whichPieceTurn, chessboard)==false && <h2>It's black turn!</h2>}
+        {isKingInCheckHelper(whichPieceTurn, chessboard)==true && checkMate(whichPieceTurn, chessboard)==false && <h2>{whichPieceTurn}'s king is in check!</h2>}
+        {checkMate(whichPieceTurn, chessboard) && <h2>Game Over! {whichPieceTurn} got Checkmate!</h2>}
+
     </div>
   )
 }

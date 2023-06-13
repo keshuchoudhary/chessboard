@@ -55,8 +55,11 @@ const ChessBoard = () => {
   return (
     <div>
 
+        <br />
+        {/* <h1 style={{color: 'black'}}>CHESSBOARD</h1> */}
+        <h1 style={{color: 'black'}}>2 - Player Chess Game</h1>
+        <br/>
 
-        <h1 style={{color: 'black'}}>CHESSBOARD</h1>
         <Grid />
 
 

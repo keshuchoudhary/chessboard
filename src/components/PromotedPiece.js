@@ -30,9 +30,12 @@ const PromotedPiece = (props) => {
   return (
     <div>
       <h3>Promoted Pieces</h3>
-      {promotedPieces.map((piece) => (
-        <img onClick={() => onPieceSelect(piece)} src={pieceImages[props.color][piece]} alt={piece} style={{cursor:'pointer'}} key={piece} />
-      ))}
+      <div style={{border: '2px solid black', backgroundColor: props.cellColor, display: 'inline-block'}}>
+        {promotedPieces.map((piece) => (
+          <img onClick={() => onPieceSelect(piece)} src={pieceImages[props.color][piece]} alt={piece} style={{cursor:'pointer', height: '120px'}} key={piece} />
+        ))}
+      </div>
+      
     </div>
   );
 };
