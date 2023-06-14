@@ -944,8 +944,6 @@ const Grid = () => {
 
     }
 
-
-
   return (
     
     <div>
@@ -981,5 +979,6 @@ const Grid = () => {
     </div>
   )
 }
+
 
 export default Grid
