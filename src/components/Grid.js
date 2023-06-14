@@ -548,17 +548,17 @@ const Grid = () => {
 
             // If king is in check and for all its valid moves, the king is going to be in check, then evaluating whether checkmate can be avoided through canCheckMateBeAvoided() function. If canCheckMateBeAvoided() function return false then we can say current player got checkmate and the checkMate() function returns true in this case
             if(canCheckMateBeAvoided(row, col, color, chessboard)==false){
-                console.log(`${whichPieceTurn} got checkmate!`)
+                // console.log(`${whichPieceTurn} got checkmate!`)
                 return true;
             }
             else{
-                console.log("Valid moves still exist to come out of check!")
+                // console.log("Valid moves still exist to come out of check!")
                 return false;
             }
         }
         // If king has some valid moves(adjacent cells) which are out of check
         else{
-            console.log("Valid moves still exist to come out of check!")
+            // console.log("Valid moves still exist to come out of check!")
             return false;
         }
 
@@ -767,11 +767,11 @@ const Grid = () => {
         // If king is in check and also if in checkmate condition
         if(isKingInCheckHelper(whichPieceTurn, chessboard)){
             if(checkMate(whichPieceTurn, chessboard)){
-                console.log(`${whichPieceTurn} player got CHECKMATE!`)
+                // console.log(`${whichPieceTurn} player got CHECKMATE!`)
                 return;
             }
             else{
-                console.log(`Current player's king(${whichPieceTurn}) is in check!`)
+                // console.log(`Current player's king(${whichPieceTurn}) is in check!`)
             }
         }
         
