@@ -954,7 +954,6 @@ const Grid = () => {
         </div>
 
 
-        
         {showPromotionModal && (
             <div className="modal">
                 <h2>Select a piece for pawn promotion:</h2>
