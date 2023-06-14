@@ -972,7 +972,7 @@ const Grid = () => {
         {whichPieceTurn=="black" && isMatchDraw(whichPieceTurn, chessboard)==false && checkMate(whichPieceTurn, chessboard)==false && <h2>It's black turn!</h2>}
         {isKingInCheckHelper(whichPieceTurn, chessboard)==true && checkMate(whichPieceTurn, chessboard)==false && <h2>{whichPieceTurn}'s king is in check!</h2>}
         {checkMate(whichPieceTurn, chessboard) && <h2>Game Over! {whichPieceTurn} got Checkmate!</h2>}
-        {isMatchDraw(whichPieceTurn, chessboard) && (
+        {isMatchDraw(whichPieceTurn, chessboard) && (checkMate(whichPieceTurn, chessboard)==false) && (
                 <div>
                     <h2>Match drawn! It's a stalemate.</h2>
                     <h3>(Current player has no legal move and isn't in check)</h3>
