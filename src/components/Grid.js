@@ -25,36 +25,7 @@ const Grid = () => {
         },
     };
 
-
-    // const getPieceImage = (pieceImage, row, col) => {
-    //     if(row===1 || row===6){
-    //         return pieceImage.pawn
-    //     }
-    //     if((row===0 || row===7) && (col===0 || col===7)){
-    //         return pieceImage.rook
-    //     }
-    //     if((row===0 || row===7) && (col===1 || col===6)){
-    //         return pieceImage.knight
-    //     }
-    //     if((row===0 || row===7) && (col===2 || col===5)){
-    //         return pieceImage.bishop
-    //     }
-    //     if(row === 0 && col===4){
-    //         return pieceImage.king
-    //     }
-    //     if(row === 0 && col===3){
-    //         return pieceImage.queen
-    //     }
-    //     if(row === 7 && col===4){
-    //         return pieceImage.queen
-    //     }
-    //     if(row === 7 && col===3){
-    //         return pieceImage.king
-    //     }
-
-    // }
-
-
+    
     // "chessboard" state variable which is a 2-D array of dimension 8x8, which holds info of each cell, i.e. null or (type, color, img)
     const [chessboard, setChessboard] = useState([
 
@@ -951,15 +922,6 @@ const Grid = () => {
                 const isHighlighted = recentPieceClicked.validMoves.some(
                     (highlightedCell) => highlightedCell.row === row && highlightedCell.col === col
                 );
-
-
-                // let pieceImage = null;
-                // if(row===0 || row===1){
-                //     pieceImage = pieceImages.black
-                // }
-                // else if(row===6 || row===7){
-                //     pieceImage = pieceImages.white
-                // }
                 
                 const cell = (
                     <div
@@ -968,9 +930,6 @@ const Grid = () => {
                         style={{backgroundColor: cellColor }}
                         onClick={ () => handlePieceClick(row, col)}
                     >
-                        {/* <img src={img} height='90px' width= '90px'></img> */}
-                        {/* {pieceImage && <img src={pieceImage.king} alt="piece" />} */}
-                        {/* {pieceImage && <img src={getPieceImage(pieceImage, row, col)} alt = "img" style={{cursor:'pointer'}} onClick={ () => handlePieceClick(row, col)}></img>} */}
                         { chessboard[row][col] && <img src={chessboard[row][col].img} alt = "img" style={{cursor:'pointer'}}></img>}
                     </div>
                 )
