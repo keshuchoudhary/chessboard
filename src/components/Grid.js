@@ -883,10 +883,12 @@ const Grid = () => {
         if (selectedPromotedPiece) {
             // console.log(selectedPromotedPiece)
             let updatedCopy=JSON.parse(JSON.stringify(chessboard));
-            updatedCopy[currentCellClicked.row][currentCellClicked.col].type = selectedPromotedPiece;
-            updatedCopy[currentCellClicked.row][currentCellClicked.col].img = pieceImages[whichPieceTurn][selectedPromotedPiece];
-            updatedCopy[currentCellClicked.row][currentCellClicked.col].color = whichPieceTurn;
 
+            updatedCopy[currentCellClicked.row][currentCellClicked.col]={
+                type: selectedPromotedPiece,
+                img: pieceImages[whichPieceTurn][selectedPromotedPiece],
+                color: whichPieceTurn,
+            }
             updatedCopy[recentPieceClicked.row][recentPieceClicked.col]=null;
             
             setRecentPieceClicked({...recentPieceClicked, value: false, type: '', color: '', row: -1, col: -1, validMoves: [] });
