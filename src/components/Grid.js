@@ -938,8 +938,6 @@ const Grid = () => {
             }
         }
 
-
-
         return grid;
 
     }
