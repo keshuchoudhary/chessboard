@@ -281,8 +281,6 @@ const Grid = () => {
         const performTask = (rowNo, colNo, rowOper, colOper) => {
             while(rowNo>=0 && rowNo<8 && colNo>=0 && colNo<8){
 
-                
-
                 if(chessboard[rowNo][colNo]==null){
                     validMoves.push({row: rowNo, col: colNo})
                 }
